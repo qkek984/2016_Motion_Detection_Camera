@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<style>
+html, body{
+	height:100%
+}
+.menu_div{
+	background-color:black;
+	color:white;
+	float:left;
+	width:20%;
+	height:100%;
+	text-align:center;
+}
+.button_div{
+	float:left;
+	width:80%;
+	height:100%;
+
+}
+.streming_div{
+
+	height:50%;
+}
+.capture_div{
+
+	height:50%;
+}
+.menu_table > tr{
+	background-color:black;
+	border:3px solid #ffffff;
+	margin:2px 2px 2px 2px;
+}
+.menu_table{
+	margin:2px 2px 2px 2px;
+}
+
+button{
+
+width:100px;
+}
+#stream_button,#capture_button{
+width:100px;
+background-color:black;
+color:white;
+}
+#stream_button:hover{
+color:lightgray;
+}
+#capture_button:hover{
+color:lightgray;
+}
+#stream_button:active{
+color:white;
+background-color:gray;
+}
+#capture_button:active{
+color:white;
+background-color:gray;
+}
+
+</style>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<script>
+
+
+$(document).ready(function(){
+
+    $("#stream_button").click(function(){
+	var ts = new Date().getTime();
+        $("#streaming_div").html("<video width='640px' height='480px' controls='' autoplay='' name='media'><source src='/stream?timestamp=" + ts + "' type='video/mp4'></video>");
+	});
+
+	$("#capture_button").click(function(){
+	var ts = new Date().getTime();
+        $("#capture_div").html("<img src='/capture?timestamp=" + ts + "' width='640px' height='auto'/>");
+	});
+
+	$("#list_btn").click(function(){
+
+		var regExp = /[\{\}\[\]\/?;:|\)*~`!^\-+<>@\#$%&\\\=\(\'\"]/gi
+		var tt = "{{line}}";      
+		tt = tt.replace(regExp, "");
+		tt = tt.split(",");
+		//$("#list_div").html("");
+		$("#list_div").html("<input type='radio' name = 'lists' value='default' checked> default<br>");
+		for(var i=0; i<tt.length-1; i++){
+			console.log(tt[i]);
+			tt[i] = tt[i].replace(/39/,"").replace(/39$/,'');
+			$("#list_div").append("<input type='radio' name = 'lists' value="+i+">" + tt[i] + "<br>");
+		}
+	 });
+
+    $("#config_button").click(function(event) {
+        var formData = $("#config_form").serialize();
+        $.get("/config?" + formData, function(mode, data, status, lists) {
+            alert(mode+ data + "\nStatus: " + status + "\nlist: " + lists);
+        	});
+        event.preventDefault();
+	});
+
+
+});
+
+</script>
+</head>
+
+
+<body>
+<fieldset style="width:auto; border-radius:8px; border:1px solid #0000ff; box-shadow:0 0 10px #0000ff">
+<table><tr><td><p style="color:gray">[Raspberry PI Camera]</p></td>
+<td> <h1>Streaming Gaurd </h1></td>
+</tr></table>
+
+</fieldset>
+
+<div class=menu_div>
+	<br>
+
+	<br>
+	<fieldset style="text-align:center; background-color:black">
+		<legend>Option</legend>
+		<form id="config_form">	
+		<b style="color:deepskyblue">Mode</b><br>
+		<input type="radio" name="mode" value="0" checked> Motion Detecton <br>
+		<input type="radio" name="mode" value="1"> Capture <br>
+		<hr/>
+		<b style="color:skyblue">Annotate Text</b>
+	
+	  	<input type="text" name="annotate" value="CAM1" style="width:95%">
+		<hr/>
+		<b style="color:lightblue">Camera Effect</b><br>
+		<input type="radio" name="effect" value="0" checked> Default <br>
+		<input type="radio" name="effect" value="1"> ColorSwap <br>
+		<input type="radio" name="effect" value="2"> Emboss <br>
+		<input type="radio" name="effect" value="3"> sketch <br>
+		<button id="config_button">Save</button>
+		<hr/>
+		
+		<div id=list_div>
+
+		<input type='radio' name = "lists" value="default" checked> default
+		</div>
+
+
+	</form><br>
+		<button id="list_btn">lists</button><br>
+		</fieldset><br>
+
+	
+	
+
+</div>
+
+<div class="button_div">
+	<fieldset style="height:490px">
+	<legend><button id="stream_button">Stream</button><br></legend>
+	<div id="streaming_div"></div>
+	</fieldset>
+
+	<fieldset style="height:490px">
+	<legend><button id="capture_button">Capture</button></legend>
+	<div id="capture_div"></div>
+	</fieldset>
+</div>
+
+</body>
+</html>
